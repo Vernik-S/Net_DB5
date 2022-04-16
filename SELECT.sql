@@ -33,7 +33,7 @@ ORDER BY A.name --в алфавитном пор€дке
 --SELECT *  FROM musicians msc
 SELECT *  FROM musicians msc
 WHERE id NOT IN 
-	(SELECT msc.id  FROM musicians msc
+	(SELECT msc.id  FROM musicians msc -- список id музыкантов ¬џѕ”—“»¬Ў»’ альбомы в 2020
 	INNER JOIN albumsmusicians am ON msc.id  = am.musican_id 
 	INNER JOIN albums a ON am.album_id  = a.id 
 	WHERE a.year = 2020)
@@ -84,7 +84,7 @@ SELECT msc.name, t.name, t.duration  FROM musicians msc
 	INNER JOIN albums a ON am.album_id  = a.id
 	INNER JOIN tracks t  ON t.album_id = a.id
 	WHERE t.id IN 
-		(SELECT id FROM tracks
+		(SELECT id FROM tracks --список id треков, у которых длительность равна минимальной
 		WHERE duration = (SELECT  min(duration) from tracks	))
 ;
 
