@@ -79,27 +79,48 @@ WHERE tm.id IS NULL
 ;
 
 --8. исполнителя(-ей), написавшего самый короткий по продолжительности трек (теоретически таких треков может быть несколько);.id
+--SELECT msc.name, t.name, t.duration  FROM musicians msc
+--	INNER JOIN albumsmusicians am ON msc.id  = am.musican_id 
+--	INNER JOIN albums a ON am.album_id  = a.id
+--	INNER JOIN tracks t  ON t.album_id = a.id
+--	WHERE t.id IN 
+--		(SELECT id FROM tracks --список id треков, у которых длительность равна минимальной
+--		WHERE duration = (SELECT  min(duration) from tracks	))
+--;
+
 SELECT msc.name, t.name, t.duration  FROM musicians msc
 	INNER JOIN albumsmusicians am ON msc.id  = am.musican_id 
 	INNER JOIN albums a ON am.album_id  = a.id
 	INNER JOIN tracks t  ON t.album_id = a.id
-	WHERE t.id IN 
-		(SELECT id FROM tracks --список id треков, у которых длительность равна минимальной
-		WHERE duration = (SELECT  min(duration) from tracks	))
+	WHERE t.duration = (SELECT  min(duration) from tracks	)
 ;
 
 --9. название альбомов, содержащих наименьшее количество треков.
+
+
+--SELECT a.name  FROM albums a
+--INNER JOIN tracks t ON t.album_id = a.id
+--GROUP BY a.id
+--HAVING COUNT(*) = 
+--		(SELECT min(cnt) --определение минимума
+--		FROM (SELECT a.id, COUNT(*) as cnt FROM albums a --количество треков в альбомах
+--		INNER JOIN tracks t ON t.album_id = a.id
+--		GROUP BY a.id) min_t)
+--ORDER BY a.name
+--	;
+
+
 SELECT a.name  FROM albums a
 INNER JOIN tracks t ON t.album_id = a.id
 GROUP BY a.id
-HAVING COUNT(*) = 
-		(SELECT min(cnt) --определение минимума
-		FROM (SELECT a.id, COUNT(*) as cnt FROM albums a --количество треков в альбомах
-		INNER JOIN tracks t ON t.album_id = a.id
-		GROUP BY a.id) min_t)
+HAVING COUNT(*) = (
+	SELECT COUNT(t.name) FROM albums a
+	JOIN tracks t ON a.id = t.album_id 
+	GROUP BY a.name
+	ORDER BY COUNT(t.id)
+	LIMIT 1);
 ORDER BY a.name
 	;
-
 -- Альбомы - количество треков
 
 SELECT a.name, COUNT(*) as cnt FROM albums a --количество треков в альбомах
